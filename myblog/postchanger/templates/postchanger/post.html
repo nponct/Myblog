@@ -1,0 +1,35 @@
+{% extends 'postchanger/base.html' %}
+
+{% block content %}
+<h1>{{post.title}}</h1>
+
+{{post.content|linebreaks}}
+
+<h2> Комментарии </h2>
+
+     {% if user.is_authenticated %}
+      <form action="" method="POST" id="main_form" class="comment_form">
+         <div>
+             <label for="comment">Оставить комметарий</label>
+            {{ comment_form.content }} {% csrf_token %} <input type="submit" value="Разместить"></div>
+
+      </form>
+      {% else %} <h2>You need to Login to comment</h2>
+      {% endif %}
+
+      {% for comment in comments %}
+         {% if comment.is_parent %}
+         <h3> <b>{{ comment.author }} : </b> {{ comment.content }}</h3>
+         &nbsp; &nbsp; &nbsp;
+         <form action="" method="POST" id="main_form" class="comment_form">
+            <div>
+                &nbsp; &nbsp; &nbsp;<label for="comment">Ответьте на комментарий </label>
+               &nbsp; &nbsp; &nbsp;<input type="text" name="content"> <input type="hidden" value="{{ comment.pk }}" name="parent"> {% csrf_token %} <input type="submit" value="Ответить"></div>
+         </form>
+         {% endif %}
+
+         {% for replies in comment.children %}
+            <h3>&nbsp; &nbsp; &nbsp; <b>{{ comment.author }} : </b> {{ replies.content }}</h3>
+         {% endfor %}
+      {% endfor %}
+{% endblock %}
